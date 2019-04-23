@@ -166,5 +166,23 @@ namespace Apex.ValueCompression.Tests {
                 }
             }
         }
+
+        [TestMethod]
+        public void StringCompressor() {
+            var values = new List<string>();
+            values.Add("");
+            values.Add("abc");
+            values.Add("123");
+            values.Add("The quick brown fox jumped over the lazy dog.");
+            values.Add(@"!@#$%^&*()_+~?><)""");
+            using (var ms = new MemoryStream()) {
+                foreach (var value in values)
+                    ms.WriteCompressedString(value);
+                ms.Seek(0, SeekOrigin.Begin);
+                for(var i =0; i < values.Count; i++) {
+                    Assert.AreEqual(values[i], ms.ReadCompressedString());
+                }
+            }
+        }
     }
 }
