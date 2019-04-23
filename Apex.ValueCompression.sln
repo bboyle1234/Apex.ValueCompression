@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apex.ValueCompression", "Apex.ValueCompression\Apex.ValueCompression.csproj", "{D467588A-C4B6-4570-BD0C-54525D7C6001}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apex.ValueCompression.Tests", "Apex.ValueCompression.Tests\Apex.ValueCompression.Tests.csproj", "{971AF72A-D67C-4812-BA5B-0B4054447F1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".sln", ".sln", "{7F2348C0-188F-4CAF-9070-4C8EA367DC37}"
+	ProjectSection(SolutionItems) = preProject
+		version.json = version.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D467588A-C4B6-4570-BD0C-54525D7C6001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D467588A-C4B6-4570-BD0C-54525D7C6001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D467588A-C4B6-4570-BD0C-54525D7C6001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D467588A-C4B6-4570-BD0C-54525D7C6001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{971AF72A-D67C-4812-BA5B-0B4054447F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{971AF72A-D67C-4812-BA5B-0B4054447F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{971AF72A-D67C-4812-BA5B-0B4054447F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{971AF72A-D67C-4812-BA5B-0B4054447F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E95EE8D-0BFF-4B3E-A89C-613522632EB1}
+	EndGlobalSection
+EndGlobal
