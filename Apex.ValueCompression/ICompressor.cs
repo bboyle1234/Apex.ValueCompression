@@ -4,10 +4,11 @@ using System.IO;
 using System.Text;
 
 namespace Apex.ValueCompression {
+
     public interface ICompressor<T> {
 
-        void Compress(Stream stream, T value);
+        void WriteCompressedValue(Stream stream, T value);
 
-        T Decompress(Stream stream);
+        T ReadCompressedValue(Stream stream);
     }
 }
