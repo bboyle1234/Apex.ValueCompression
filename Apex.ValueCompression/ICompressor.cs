@@ -5,10 +5,11 @@ using System.Text;
 
 namespace Apex.ValueCompression {
 
-    public interface ICompressor<T> {
+    public interface ICompressor<in T> {
+        void Compress(Stream stream, T value);
+    }
 
-        void WriteCompressedValue(Stream stream, T value);
-
-        T ReadCompressedValue(Stream stream);
+    public interface IDecompressor<out T> {
+        T Decompress(Stream stream);
     }
 }
