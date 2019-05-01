@@ -12,17 +12,15 @@ namespace Apex.ValueCompression {
 
         public static void WriteCompressedString(this Stream stream, string value) {
             var bytes = Encoding.GetBytes(value);
+            UIntCompressor.WriteCompressedUInt(stream, (uint)bytes.Length);
             stream.Write(bytes, 0, bytes.Length);
-            stream.WriteByte(0);
         }
 
         public static string ReadCompressedString(this Stream stream) {
-            var bytes = new List<byte>();
-            while (true) {
-                var b = stream.ReadByte();
-                if (b <= 0) return Encoding.GetString(bytes.ToArray());
-                bytes.Add((byte)b);
-            }
+            var length = (int)UIntCompressor.ReadCompressedUInt(stream);
+            var bytes = new byte[length];
+            stream.Read(bytes, 0, length);
+            return Encoding.GetString(bytes);
         }
     }
 }
