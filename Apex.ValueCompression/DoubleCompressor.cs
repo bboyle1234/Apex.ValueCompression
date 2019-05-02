@@ -15,6 +15,20 @@ namespace Apex.ValueCompression {
             return BitConverter.ToDouble(bytes, 0);
         }
 
+        public static void WriteNullableFullDouble(this Stream stream, double? value) {
+            if (value.HasValue) {
+                stream.WriteCompressedInt(1);
+                stream.WriteFullDouble(value.Value);
+            } else {
+                stream.WriteCompressedInt(0);
+            }
+        }
+
+        public static double? ReadNullableFullDouble(this Stream stream) {
+            if (stream.ReadCompressedInt() == 0) return null;
+            return stream.ReadFullDouble();
+        }
+
         public static void WriteDoubleOffset(this Stream stream, double seed, double tickSize, double value) {
             if (value == seed) {
                 stream.WriteCompressedInt(0);

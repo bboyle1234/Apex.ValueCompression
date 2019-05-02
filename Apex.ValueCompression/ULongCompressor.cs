@@ -28,5 +28,20 @@ namespace Apex.ValueCompression {
             }
             return result | ((inputByte & DATA_MASK) << shiftBits);
         }
+
+        public static void WriteCompressedNullableULong(this Stream stream, ulong? value) {
+            if (value.HasValue) {
+                stream.WriteCompressedInt(1);
+                stream.WriteCompressedULong(value.Value);
+            } else {
+                stream.WriteCompressedInt(0);
+            }
+        }
+
+        public static ulong? ReadCompressedNullableULong(this Stream stream) {
+            if (stream.ReadCompressedInt() == 0) return null;
+            return stream.ReadCompressedULong();
+        }
+
     }
 }

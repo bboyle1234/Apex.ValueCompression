@@ -45,5 +45,19 @@ namespace Apex.ValueCompression {
             result += (int)input.ReadCompressedUInt() << 5;
             return ((firstByte & SIGN_MASK) == 0) ? result : -result;
         }
+
+        public static void WriteCompressedNullableInt(this Stream stream, int? value) {
+            if (value.HasValue) {
+                stream.WriteCompressedInt(1);
+                stream.WriteCompressedInt(value.Value);
+            } else {
+                stream.WriteCompressedInt(0);
+            }
+        }
+
+        public static int? ReadCompressedNullableInt(this Stream stream) {
+            if (stream.ReadCompressedInt() == 0) return null;
+            return stream.ReadCompressedInt();
+        }
     }
 }

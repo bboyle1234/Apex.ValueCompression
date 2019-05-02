@@ -32,5 +32,19 @@ namespace Apex.ValueCompression {
             return result | (uint)((inputByte & DATA_MASK) << shiftBits);
         }
 
+        public static void WriteCompressedNullableUInt(this Stream stream, uint? value) {
+            if (value.HasValue) {
+                stream.WriteCompressedInt(1);
+                stream.WriteCompressedUInt(value.Value);
+            } else {
+                stream.WriteCompressedInt(0);
+            }
+        }
+
+        public static uint? ReadCompressedNullableUInt(this Stream stream) {
+            if (stream.ReadCompressedInt() == 0) return null;
+            return stream.ReadCompressedUInt();
+        }
+
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Apex.ValueCompression.Tests {
 
@@ -212,6 +213,19 @@ namespace Apex.ValueCompression.Tests {
                 ms.Seek(0, SeekOrigin.Begin);
                 for (var i = 0; i < values.Count; i++) {
                     Assert.AreEqual(values[i], ms.ReadCompressedDecimal());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void EnumCompressor() {
+            var values = ((ConsoleColor[])Enum.GetValues(typeof(ConsoleColor))).ToList();
+            using (var ms = new MemoryStream()) {
+                foreach (var x in values)
+                    ms.WriteCompressedEnum(x);
+                ms.Seek(0, SeekOrigin.Begin);
+                for (var i = 0; i < values.Count; i++) {
+                    Assert.AreEqual(values[i], ms.ReadCompressedEnum<ConsoleColor>());
                 }
             }
         }

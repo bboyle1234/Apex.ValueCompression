@@ -24,5 +24,19 @@ namespace Apex.ValueCompression {
             bits[3] = stream.ReadCompressedInt();
             return new decimal(bits);
         }
+
+        public static void WriteCompressedNullableDecimal(this Stream stream, decimal? value) {
+            if (value.HasValue) {
+                stream.WriteCompressedInt(1);
+                stream.WriteCompressedDecimal(value.Value);
+            } else {
+                stream.WriteCompressedInt(0);
+            }
+        }
+
+        public static decimal? ReadCompressedNullableDecimal(this Stream stream) {
+            if (stream.ReadCompressedInt() == 0) return null;
+            return stream.ReadCompressedDecimal();
+        }
     }
 }
