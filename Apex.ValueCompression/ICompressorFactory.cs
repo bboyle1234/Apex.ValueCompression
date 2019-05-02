@@ -58,32 +58,38 @@ namespace Apex.ValueCompression {
         public void AddFromAssembly(Assembly assembly) {
             foreach (var type in assembly.GetTypes()) {
                 if (type.IsClass && !type.IsAbstract) {
-
-                    var compressorInterfaces = type.GetInterfaces()
-                        .Where(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(ICompressor<>))
-                        .ToList();
-
-                    if (compressorInterfaces.Count > 0) {
-                        var instance = Activator.CreateInstance(type);
-                        foreach (var i in compressorInterfaces) {
-                            var compressionType = i.GetGenericArguments().First();
-                            Compressors[compressionType] = instance;
-                        }
-                    }
-
-
-                    var decompressorInterfaces = type.GetInterfaces()
-                        .Where(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IDecompressor<>))
-                        .ToList();
-
-                    if (decompressorInterfaces.Count > 0) {
-                        var instance = Activator.CreateInstance(type);
-                        foreach (var i in decompressorInterfaces) {
-                            var compressionType = i.GetGenericArguments().First();
-                            Decompressors[compressionType] = instance;
-                        }
-                    }
+                    try { Add(type); } catch { }
                 }
+            }
+        }
+
+        public void Add(Type type, object instance = null) {
+
+            if (null != instance && instance.GetType() != type)
+                throw new Exception("type mismatch.");
+
+            var compressorInterfaces = type.GetInterfaces()
+                .Where(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(ICompressor<>))
+                .ToList();
+
+            var decompressorInterfaces = type.GetInterfaces()
+                .Where(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IDecompressor<>))
+                .ToList();
+
+            if (compressorInterfaces.Count == 0 && decompressorInterfaces.Count == 0)
+                throw new Exception($"Unable to find interfaces for type '{type}'.");
+
+            if (null == instance)
+                instance = Activator.CreateInstance(type);
+
+            foreach (var i in compressorInterfaces) {
+                var compressionType = i.GetGenericArguments().First();
+                Compressors[compressionType] = instance;
+            }
+
+            foreach (var i in decompressorInterfaces) {
+                var compressionType = i.GetGenericArguments().First();
+                Decompressors[compressionType] = instance;
             }
         }
 
@@ -105,6 +111,61 @@ namespace Apex.ValueCompression {
         public IDecompressor GetDecompressor(Type type) {
             Decompressors.TryGetValue(type, out var decompressor);
             return decompressor as IDecompressor;
+        }
+    }
+
+    public class ServiceProviderCompressorFactory : ICompressorFactory {
+
+        readonly IServiceProvider ServiceProvider;
+        readonly CompressorFactory Factory;
+
+        public ServiceProviderCompressorFactory(IServiceProvider serviceProvider) {
+            ServiceProvider = serviceProvider;
+            Factory = new CompressorFactory();
+        }
+
+        public ICompressor<T> GetCompressor<T>() {
+            var result = Factory.GetCompressor<T>();
+            if (null == result) {
+                var serviceType = typeof(ICompressor<T>);
+                result = ServiceProvider.GetService(serviceType) as ICompressor<T>;
+                if (null == result) throw new Exception($"Unable to find compressor for type '{typeof(T)}'.");
+                Factory.Add(result.GetType(), result);
+            }
+            return result;
+        }
+
+        public ICompressor GetCompressor(Type type) {
+            var result = Factory.GetCompressor(type);
+            if (null == result) {
+                var serviceType = typeof(ICompressor<>).MakeGenericType(type);
+                result = ServiceProvider.GetService(serviceType) as ICompressor;
+                if (null == result) throw new Exception($"Unable to find compressor for type '{type}'.");
+                Factory.Add(result.GetType(), result);
+            }
+            return result;
+        }
+
+        public IDecompressor<T> GetDecompressor<T>() {
+            var result = Factory.GetDecompressor<T>();
+            if (null == result) {
+                var serviceType = typeof(IDecompressor<T>);
+                result = ServiceProvider.GetService(serviceType) as IDecompressor<T>;
+                if (null == result) throw new Exception($"Unable to find decompressor for type '{typeof(T)}'.");
+                Factory.Add(result.GetType(), result);
+            }
+            return result;
+        }
+
+        public IDecompressor GetDecompressor(Type type) {
+            var result = Factory.GetDecompressor(type);
+            if (null == result) {
+                var serviceType = typeof(IDecompressor<>).MakeGenericType(type);
+                result = ServiceProvider.GetService(serviceType) as IDecompressor;
+                if (null == result) throw new Exception($"Unable to find decompressor for type '{type}'.");
+                Factory.Add(result.GetType(), result);
+            }
+            return result;
         }
     }
 }
