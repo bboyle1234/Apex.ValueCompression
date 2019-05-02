@@ -24,7 +24,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static bool? ReadCompressedNullableDecimal(this Stream stream) {
+        public static bool? ReadCompressedNullableBool(this Stream stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedBool();
         }
