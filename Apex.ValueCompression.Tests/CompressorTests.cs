@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Apex.ValueCompression.Tests {
@@ -11,7 +12,7 @@ namespace Apex.ValueCompression.Tests {
         [TestMethod]
         public void IntCompressor() {
             var values = new List<int>();
-            var value = int.MinValue + 1;
+            var value = int.MinValue;
             var increment = (int.MaxValue / 10000) - (int.MinValue / 10000);
             while (true) {
                 values.Add(value);
@@ -40,7 +41,7 @@ namespace Apex.ValueCompression.Tests {
         [TestMethod]
         public void LongCompressor() {
             var values = new List<long>();
-            var value = long.MinValue + 1;
+            var value = long.MinValue;
             var increment = (long.MaxValue / 10000) - (long.MinValue / 10000);
             while (true) {
                 values.Add(value);
@@ -161,7 +162,7 @@ namespace Apex.ValueCompression.Tests {
                 foreach (var value in values)
                     ms.WriteDoubleOffset(seed, tickSize, value);
                 ms.Seek(0, SeekOrigin.Begin);
-                for(var i = 0; i < values.Count; i++) {
+                for (var i = 0; i < values.Count; i++) {
                     Assert.AreEqual(values[i], ms.ReadDoubleOffset(seed, tickSize));
                 }
             }
@@ -179,8 +180,38 @@ namespace Apex.ValueCompression.Tests {
                 foreach (var value in values)
                     ms.WriteCompressedString(value);
                 ms.Seek(0, SeekOrigin.Begin);
-                for(var i =0; i < values.Count; i++) {
+                for (var i = 0; i < values.Count; i++) {
                     Assert.AreEqual(values[i], ms.ReadCompressedString());
+                }
+            }
+        }
+
+
+        [TestMethod]
+        public void DecimalCompressor() {
+            var values = new List<decimal>();
+            var value = decimal.MinValue;
+            var increment = (decimal.MaxValue / 10000) - (decimal.MinValue / 10000);
+            while (true) {
+                values.Add(value);
+                if (value == decimal.MaxValue) break;
+                if (value < decimal.MaxValue - increment) {
+                    value += increment;
+                } else {
+                    value = decimal.MaxValue;
+                }
+            }
+
+            for (var i = -1001; i < 1001; i++) {
+                values.Add(i);
+            }
+
+            using (var ms = new MemoryStream()) {
+                foreach (var x in values)
+                    ms.WriteCompressedDecimal(x);
+                ms.Seek(0, SeekOrigin.Begin);
+                for (var i = 0; i < values.Count; i++) {
+                    Assert.AreEqual(values[i], ms.ReadCompressedDecimal());
                 }
             }
         }
