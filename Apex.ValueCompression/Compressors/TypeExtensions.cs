@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Apex.ValueCompression.Compressors {
 
     public static class TypeExtensions {
+
+        public static IEnumerable<CompressorTypeData> GetCompressorTypeData(this Assembly assembly)
+            => assembly.GetTypes().SelectMany(t => t.GetCompressorTypeData());
+
+        public static IEnumerable<CompressorTypeData> GetDecompressorTypeData(this Assembly assembly)
+            => assembly.GetTypes().SelectMany(t => t.GetDecompressorTypeData());
 
         public static IEnumerable<CompressorTypeData> GetCompressorTypeData(this Type type) {
             if (!type.IsClass) yield break;

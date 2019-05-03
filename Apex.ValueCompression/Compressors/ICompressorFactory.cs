@@ -30,7 +30,6 @@ namespace Apex.ValueCompression.Compressors {
         /// <typeparam name="T">The type to be decompressed.</typeparam>
         IDecompressor<T> GetDecompressor<T>();
 
-
         /// <summary>
         /// Gets a decompressor for the given type. Returns null if the decompressor cannot be found.
         /// </summary>

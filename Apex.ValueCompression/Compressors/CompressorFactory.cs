@@ -32,16 +32,13 @@ namespace Apex.ValueCompression.Compressors {
         /// The assembly is searched for types inheriting <see cref="ICompressor{T}"/> and <see cref="IDecompressor{T}"/>
         /// </summary>
         public void AddFromAssembly(Assembly assembly) {
-            foreach (var type in assembly.GetTypes()) {
-                var compressorInfo = type.GetCompressorTypeData().ToArray();
-                var decompressorInfo = type.GetDecompressorTypeData().ToArray();
-                if (compressorInfo.Length > 0 || decompressorInfo.Length > 0) {
-                    var instance = Activator.CreateInstance(type);
-                    foreach(var x in compressorInfo) 
-                        Compressors[x.CompressedObjectType] = instance;
-                    foreach (var x in decompressorInfo)
-                        Decompressors[x.CompressedObjectType] = instance;
-                }
+            foreach (var x in assembly.GetCompressorTypeData()) {
+                var instance = Activator.CreateInstance(x.ImplementationType);
+                Compressors[x.CompressedObjectType] = instance;
+            }
+            foreach (var x in assembly.GetDecompressorTypeData()) {
+                var instance = Activator.CreateInstance(x.ImplementationType);
+                Decompressors[x.CompressedObjectType] = instance;
             }
         }
 
