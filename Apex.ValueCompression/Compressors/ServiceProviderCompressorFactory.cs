@@ -3,6 +3,11 @@ using System.Collections.Concurrent;
 
 namespace Apex.ValueCompression.Compressors {
 
+    /// <summary>
+    /// Inject all your <see cref="ICompressor{T}"/> and <see cref="IDecompressor{T}"/> instances to your service provider,
+    /// then inject this class as the singleton <see cref="ICompressorFactory"/> instance to automatically make use of all the compressors
+    /// that you've injected.
+    /// </summary>
     public class ServiceProviderCompressorFactory : ICompressorFactory {
 
         readonly IServiceProvider ServiceProvider;
