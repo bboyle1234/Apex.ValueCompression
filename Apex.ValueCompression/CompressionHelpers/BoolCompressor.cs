@@ -5,28 +5,32 @@ using static System.Math;
 
 namespace Apex.ValueCompression {
 
+    /// <summary>
+    /// Writes boolean to the stream as a single byte.
+    /// 0 = False, 1 = True, 2 = nullable boolean null.
+    /// </summary>
     public static class BoolCompressor {
 
         public static void WriteCompressedBool(this IWriteBytes stream, bool value) {
-            stream.WriteCompressedInt(value ? 1 : 0);
+            stream.WriteByte(value ? (byte)1 : (byte)0);
         }
 
         public static bool ReadCompressedBool(this IReadBytes stream) {
-            return stream.ReadCompressedInt() == 1;
+            return stream.ReadByte() == 1;
         }
 
         public static void WriteCompressedNullableBool(this IWriteBytes stream, bool? value) {
-            if (value.HasValue) {
-                stream.WriteCompressedInt(1);
-                stream.WriteCompressedBool(value.Value);
+            if (null == value) {
+                stream.WriteByte(2);
             } else {
-                stream.WriteCompressedInt(0);
+                stream.WriteByte(value.Value ? (byte)1 : (byte)0);
             }
         }
 
         public static bool? ReadCompressedNullableBool(this IReadBytes stream) {
-            if (stream.ReadCompressedInt() == 0) return null;
-            return stream.ReadCompressedBool();
+            var byteValue = stream.ReadByte();
+            if (byteValue == 2) return null;
+            return byteValue == 1;
         }
     }
 }

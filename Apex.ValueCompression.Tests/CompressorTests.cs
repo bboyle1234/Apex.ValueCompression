@@ -12,6 +12,25 @@ namespace Apex.ValueCompression.Tests {
     public class CompressorTests {
 
         [TestMethod]
+        public void BoolCompressor() {
+            using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
+                writer.WriteCompressedBool(true);
+                writer.WriteCompressedBool(false);
+                writer.WriteCompressedNullableBool(true);
+                writer.WriteCompressedNullableBool(false);
+                writer.WriteCompressedNullableBool(null);
+                ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
+                Assert.IsTrue(reader.ReadCompressedBool());
+                Assert.IsFalse(reader.ReadCompressedBool());
+                Assert.IsTrue(reader.ReadCompressedNullableBool().Value);
+                Assert.IsFalse(reader.ReadCompressedNullableBool().Value);
+                Assert.IsNull(reader.ReadCompressedNullableBool());
+            }
+        }
+
+        [TestMethod]
         public void IntCompressor() {
             var values = new List<int>();
             var value = int.MinValue;
