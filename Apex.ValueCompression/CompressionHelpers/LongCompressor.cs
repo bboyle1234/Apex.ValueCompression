@@ -47,15 +47,15 @@ namespace Apex.ValueCompression {
 
         public static void WriteCompressedNullableLong(this IWriteBytes stream, long? value) {
             if (value.HasValue) {
-                stream.WriteCompressedInt(1);
+                stream.WriteCompressedBool(true);
                 stream.WriteCompressedLong(value.Value);
             } else {
-                stream.WriteCompressedInt(0);
+                stream.WriteCompressedBool(false);
             }
         }
 
         public static long? ReadCompressedNullableLong(this IReadBytes stream) {
-            if (stream.ReadCompressedInt() == 0) return null;
+            if (!stream.ReadCompressedBool()) return null;
             return stream.ReadCompressedLong();
         }
     }

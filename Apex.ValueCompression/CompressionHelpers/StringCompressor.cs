@@ -12,9 +12,9 @@ namespace Apex.ValueCompression {
 
         public static void WriteCompressedString(this IWriteBytes stream, string value) {
             if (null == value) {
-                stream.WriteCompressedInt(0);
+                stream.WriteCompressedBool(false);
             } else {
-                stream.WriteCompressedInt(1);
+                stream.WriteCompressedBool(true);
                 var bytes = Encoding.GetBytes(value);
                 UIntCompressor.WriteCompressedUInt(stream, (uint)bytes.Length);
                 stream.WriteBytes(bytes, 0, bytes.Length);
@@ -22,7 +22,7 @@ namespace Apex.ValueCompression {
         }
 
         public static string ReadCompressedString(this IReadBytes stream) {
-            if (0 == stream.ReadCompressedInt()) return null;
+            if (!stream.ReadCompressedBool()) return null;
             var length = (int)UIntCompressor.ReadCompressedUInt(stream);
             var bytes = new byte[length];
             stream.ReadBytes(bytes, 0, length);

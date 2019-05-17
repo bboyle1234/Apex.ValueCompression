@@ -18,15 +18,15 @@ namespace Apex.ValueCompression {
 
         public static void WriteCompressedNullableEnum<T>(this IWriteBytes stream, T? value) where T : struct, Enum {
             if (value.HasValue) {
-                stream.WriteCompressedInt(1);
+                stream.WriteCompressedBool(true);
                 stream.WriteCompressedEnum(value.Value);
             } else {
-                stream.WriteCompressedInt(0);
+                stream.WriteCompressedBool(false);
             }
         }
 
         public static T? ReadCompressedNullableEnum<T>(this IReadBytes stream) where T : struct, Enum {
-            if (stream.ReadCompressedInt() == 0) return null;
+            if (!stream.ReadCompressedBool()) return null;
             return stream.ReadCompressedEnum<T>();
         }
     }

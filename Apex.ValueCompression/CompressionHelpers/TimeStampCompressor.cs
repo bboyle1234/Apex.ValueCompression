@@ -18,15 +18,15 @@ namespace Apex.ValueCompression {
 
         public static void WriteCompressedNullableTimeStamp(this IWriteBytes stream, TimeStamp? value) {
             if (value.HasValue) {
-                stream.WriteCompressedInt(1);
+                stream.WriteCompressedBool(true);
                 stream.WriteCompressedTimeStamp(value.Value);
             } else {
-                stream.WriteCompressedInt(0);
+                stream.WriteCompressedBool(false);
             }
         }
 
         public static TimeStamp? ReadCompressedNullableTimeStamp(this IReadBytes stream) {
-            if (stream.ReadCompressedInt() == 0) return null;
+            if (!stream.ReadCompressedBool()) return null;
             return stream.ReadCompressedTimeStamp();
         }
     }

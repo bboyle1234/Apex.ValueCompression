@@ -17,15 +17,15 @@ namespace Apex.ValueCompression {
 
         public static void WriteNullableFullDouble(this IWriteBytes stream, double? value) {
             if (value.HasValue) {
-                stream.WriteCompressedInt(1);
+                stream.WriteCompressedBool(true);
                 stream.WriteFullDouble(value.Value);
             } else {
-                stream.WriteCompressedInt(0);
+                stream.WriteCompressedBool(false);
             }
         }
 
         public static double? ReadNullableFullDouble(this IReadBytes stream) {
-            if (stream.ReadCompressedInt() == 0) return null;
+            if (!stream.ReadCompressedBool()) return null;
             return stream.ReadFullDouble();
         }
 

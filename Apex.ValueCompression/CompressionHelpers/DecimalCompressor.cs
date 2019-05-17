@@ -27,15 +27,15 @@ namespace Apex.ValueCompression {
 
         public static void WriteCompressedNullableDecimal(this IWriteBytes stream, decimal? value) {
             if (value.HasValue) {
-                stream.WriteCompressedInt(1);
+                stream.WriteCompressedBool(true);
                 stream.WriteCompressedDecimal(value.Value);
             } else {
-                stream.WriteCompressedInt(0);
+                stream.WriteCompressedBool(false);
             }
         }
 
         public static decimal? ReadCompressedNullableDecimal(this IReadBytes stream) {
-            if (stream.ReadCompressedInt() == 0) return null;
+            if (!stream.ReadCompressedBool()) return null;
             return stream.ReadCompressedDecimal();
         }
     }
