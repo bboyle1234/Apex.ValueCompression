@@ -10,7 +10,7 @@ namespace Apex.ValueCompression {
         const long SIGN_MASK = 0x40;             // 0100 0000
         const long MIN_VALUE_MASK = 0x20;        // 0010 0000
 
-        public static void WriteCompressedLong(this Stream stream, long value) {
+        public static void WriteCompressedLong(this IWriteBytes stream, long value) {
 
             /// Because the twos-complement representation of long.MinValue cannot be negated.
             if (value == long.MinValue) {
@@ -31,7 +31,7 @@ namespace Apex.ValueCompression {
             stream.WriteCompressedULong((ulong)value);
         }
 
-        public static long ReadCompressedLong(this Stream input) {
+        public static long ReadCompressedLong(this IReadBytes input) {
             long firstByte = input.ReadByte();
             if ((firstByte & MIN_VALUE_MASK) > 0) return long.MinValue;
 
@@ -45,7 +45,7 @@ namespace Apex.ValueCompression {
             return ((firstByte & SIGN_MASK) == 0) ? result : -result;
         }
 
-        public static void WriteCompressedNullableLong(this Stream stream, long? value) {
+        public static void WriteCompressedNullableLong(this IWriteBytes stream, long? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedLong(value.Value);
@@ -54,7 +54,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static long? ReadCompressedNullableLong(this Stream stream) {
+        public static long? ReadCompressedNullableLong(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedLong();
         }

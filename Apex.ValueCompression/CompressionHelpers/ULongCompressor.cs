@@ -9,7 +9,7 @@ namespace Apex.ValueCompression {
         const ulong DATA_MASK = 0x7F; // 0111 1111
         const ulong MORE_MASK = 0x80; // 1000 0000
 
-        public static void WriteCompressedULong(this Stream stream, ulong value) {
+        public static void WriteCompressedULong(this IWriteBytes stream, ulong value) {
             while (value > DATA_MASK) {
                 stream.WriteByte((byte)(value & DATA_MASK));
                 value >>= 7;
@@ -17,7 +17,7 @@ namespace Apex.ValueCompression {
             stream.WriteByte((byte)(value | MORE_MASK));
         }
 
-        public static ulong ReadCompressedULong(this Stream stream) {
+        public static ulong ReadCompressedULong(this IReadBytes stream) {
             ulong result = 0;
             int shiftBits = 0;
             ulong inputByte = (ulong)stream.ReadByte();
@@ -29,7 +29,7 @@ namespace Apex.ValueCompression {
             return result | ((inputByte & DATA_MASK) << shiftBits);
         }
 
-        public static void WriteCompressedNullableULong(this Stream stream, ulong? value) {
+        public static void WriteCompressedNullableULong(this IWriteBytes stream, ulong? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedULong(value.Value);
@@ -38,7 +38,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static ulong? ReadCompressedNullableULong(this Stream stream) {
+        public static ulong? ReadCompressedNullableULong(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedULong();
         }

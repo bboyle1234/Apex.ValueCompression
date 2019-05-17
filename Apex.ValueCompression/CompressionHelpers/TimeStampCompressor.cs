@@ -8,15 +8,15 @@ namespace Apex.ValueCompression {
 
     public static class TimeStampCompressor {
 
-        public static void WriteCompressedTimeStamp(this Stream stream, TimeStamp value) {
+        public static void WriteCompressedTimeStamp(this IWriteBytes stream, TimeStamp value) {
             stream.WriteCompressedLong(value.TicksUtc);
         }
 
-        public static TimeStamp ReadCompressedTimeStamp(this Stream stream) {
+        public static TimeStamp ReadCompressedTimeStamp(this IReadBytes stream) {
             return new TimeStamp(stream.ReadCompressedLong());
         }
 
-        public static void WriteCompressedNullableTimeStamp(this Stream stream, TimeStamp? value) {
+        public static void WriteCompressedNullableTimeStamp(this IWriteBytes stream, TimeStamp? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedTimeStamp(value.Value);
@@ -25,7 +25,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static TimeStamp? ReadCompressedNullableTimeStamp(this Stream stream) {
+        public static TimeStamp? ReadCompressedNullableTimeStamp(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedTimeStamp();
         }

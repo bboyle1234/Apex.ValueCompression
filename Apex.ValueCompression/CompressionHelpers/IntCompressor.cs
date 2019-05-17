@@ -10,7 +10,7 @@ namespace Apex.ValueCompression {
         const int SIGN_MASK = 0x40;             // 0100 0000
         const int MIN_VALUE_MASK = 0x20;        // 0010 0000
 
-        public static void WriteCompressedInt(this Stream stream, int value) {
+        public static void WriteCompressedInt(this IWriteBytes stream, int value) {
 
             /// Because the twos-complement representation of int.MinValue cannot be negated.
             if (value == int.MinValue) {
@@ -31,7 +31,7 @@ namespace Apex.ValueCompression {
             stream.WriteCompressedUInt((uint)value);
         }
 
-        public static int ReadCompressedInt(this Stream input) {
+        public static int ReadCompressedInt(this IReadBytes input) {
 
             int firstByte = input.ReadByte();
             if ((firstByte & MIN_VALUE_MASK) > 0) return int.MinValue;
@@ -46,7 +46,7 @@ namespace Apex.ValueCompression {
             return ((firstByte & SIGN_MASK) == 0) ? result : -result;
         }
 
-        public static void WriteCompressedNullableInt(this Stream stream, int? value) {
+        public static void WriteCompressedNullableInt(this IWriteBytes stream, int? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedInt(value.Value);
@@ -55,7 +55,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static int? ReadCompressedNullableInt(this Stream stream) {
+        public static int? ReadCompressedNullableInt(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedInt();
         }

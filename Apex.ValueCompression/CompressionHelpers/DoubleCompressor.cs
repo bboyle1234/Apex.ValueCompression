@@ -5,17 +5,17 @@ using static System.Math;
 namespace Apex.ValueCompression {
     public static class DoubleCompressor {
 
-        public static void WriteFullDouble(this Stream stream, double value) {
-            stream.Write(BitConverter.GetBytes(value), 0, 8);
+        public static void WriteFullDouble(this IWriteBytes stream, double value) {
+            stream.WriteBytes(BitConverter.GetBytes(value), 0, 8);
         }
 
-        public static double ReadFullDouble(this Stream stream) {
+        public static double ReadFullDouble(this IReadBytes stream) {
             var bytes = new byte[8];
-            stream.Read(bytes, 0, 8);
+            stream.ReadBytes(bytes, 0, 8);
             return BitConverter.ToDouble(bytes, 0);
         }
 
-        public static void WriteNullableFullDouble(this Stream stream, double? value) {
+        public static void WriteNullableFullDouble(this IWriteBytes stream, double? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteFullDouble(value.Value);
@@ -24,12 +24,12 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static double? ReadNullableFullDouble(this Stream stream) {
+        public static double? ReadNullableFullDouble(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadFullDouble();
         }
 
-        public static void WriteDoubleOffset(this Stream stream, double seed, double tickSize, double value) {
+        public static void WriteDoubleOffset(this IWriteBytes stream, double seed, double tickSize, double value) {
             if (value == seed) {
                 stream.WriteCompressedInt(0);
             } else {
@@ -37,7 +37,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static double ReadDoubleOffset(this Stream stream, double seed, double tickSize) {
+        public static double ReadDoubleOffset(this IReadBytes stream, double seed, double tickSize) {
             return (double)((decimal)Round((seed / tickSize) + stream.ReadCompressedInt()) * (decimal)tickSize);
         }
     }

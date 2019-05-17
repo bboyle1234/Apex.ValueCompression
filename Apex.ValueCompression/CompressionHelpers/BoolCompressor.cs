@@ -7,15 +7,15 @@ namespace Apex.ValueCompression {
 
     public static class BoolCompressor {
 
-        public static void WriteCompressedBool(this Stream stream, bool value) {
+        public static void WriteCompressedBool(this IWriteBytes stream, bool value) {
             stream.WriteCompressedInt(value ? 1 : 0);
         }
 
-        public static bool ReadCompressedBool(this Stream stream) {
+        public static bool ReadCompressedBool(this IReadBytes stream) {
             return stream.ReadCompressedInt() == 1;
         }
 
-        public static void WriteCompressedNullableBool(this Stream stream, bool? value) {
+        public static void WriteCompressedNullableBool(this IWriteBytes stream, bool? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedBool(value.Value);
@@ -24,7 +24,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static bool? ReadCompressedNullableBool(this Stream stream) {
+        public static bool? ReadCompressedNullableBool(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedBool();
         }

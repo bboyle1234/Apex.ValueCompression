@@ -3,11 +3,11 @@
 namespace Apex.ValueCompression.Compressors {
 
     public interface IDecompressor {
-        object Decompress(Stream stream);
+        object Decompress(IReadBytes stream);
     }
 
     public interface IDecompressor<out T> : IDecompressor {
-        new T Decompress(Stream stream);
+        new T Decompress(IReadBytes stream);
     }
 
 }

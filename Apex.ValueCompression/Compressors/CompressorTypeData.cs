@@ -5,7 +5,7 @@ namespace Apex.ValueCompression.Compressors {
     /// <summary>
     /// Used for obtaining information about a compressor or decompressor type.
     /// </summary>
-    public class CompressorTypeData {
+    public sealed class CompressorTypeData {
 
         /// <summary>
         /// The type of the class that implements the compressor or decompressor. You can create instances of this class to perform the actual work.

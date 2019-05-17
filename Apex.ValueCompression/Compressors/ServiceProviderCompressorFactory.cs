@@ -25,8 +25,7 @@ namespace Apex.ValueCompression.Compressors {
 
         /// <inheritdoc />
         public ICompressor GetCompressor(Type type) {
-            var serviceType = typeof(ICompressor<>).MakeGenericType(type);
-            return Compressors.GetOrAdd(type, t => ServiceProvider.GetService(serviceType)) as ICompressor;
+            return Compressors.GetOrAdd(type, t => ServiceProvider.GetService(typeof(ICompressor<>).MakeGenericType(type))) as ICompressor;
         }
 
         /// <inheritdoc />
@@ -36,8 +35,7 @@ namespace Apex.ValueCompression.Compressors {
 
         /// <inheritdoc />
         public IDecompressor GetDecompressor(Type type) {
-            var serviceType = typeof(IDecompressor<>).MakeGenericType(type);
-            return Decompressors.GetOrAdd(type, t => ServiceProvider.GetService(serviceType)) as IDecompressor;
+            return Decompressors.GetOrAdd(type, t => ServiceProvider.GetService(typeof(IDecompressor<>).MakeGenericType(type))) as IDecompressor;
         }
     }
 }

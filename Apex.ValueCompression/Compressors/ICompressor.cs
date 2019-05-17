@@ -6,10 +6,10 @@ using System.Text;
 namespace Apex.ValueCompression.Compressors {
 
     public interface ICompressor {
-        void Compress(Stream stream, object value);
+        void Compress(IWriteBytes stream, object value);
     }
 
     public interface ICompressor<in T> : ICompressor {
-        void Compress(Stream stream, T value);
+        void Compress(IWriteBytes stream, T value);
     }
 }

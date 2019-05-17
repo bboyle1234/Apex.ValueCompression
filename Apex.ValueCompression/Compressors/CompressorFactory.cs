@@ -6,7 +6,8 @@ using System.Reflection;
 namespace Apex.ValueCompression.Compressors {
 
     /// <summary>
-    /// Use this class to store compressors, or build your own <see cref="ICompressorFactory"/>
+    /// Use this class to store compressors.
+    /// You can inherit it to build custom functionality, or build your own <see cref="ICompressorFactory"/> from scratch.
     /// </summary>
     public class CompressorFactory : ICompressorFactory {
 

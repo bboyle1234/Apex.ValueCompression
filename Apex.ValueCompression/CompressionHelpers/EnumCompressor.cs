@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 namespace Apex.ValueCompression {
     public static class EnumCompressor {
 
-        public static void WriteCompressedEnum<T>(this Stream stream, T value) where T : Enum {
+        public static void WriteCompressedEnum<T>(this IWriteBytes stream, T value) where T : Enum {
             stream.WriteCompressedInt((int)(object)value);
         }
 
-        public static T ReadCompressedEnum<T>(this Stream stream) where T : Enum {
+        public static T ReadCompressedEnum<T>(this IReadBytes stream) where T : Enum {
             return (T)(object)stream.ReadCompressedInt();
         }
 
-        public static void WriteCompressedNullableEnum<T>(this Stream stream, T? value) where T : struct, Enum {
+        public static void WriteCompressedNullableEnum<T>(this IWriteBytes stream, T? value) where T : struct, Enum {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedEnum(value.Value);
@@ -25,7 +25,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static T? ReadCompressedNullableEnum<T>(this Stream stream) where T : struct, Enum {
+        public static T? ReadCompressedNullableEnum<T>(this IReadBytes stream) where T : struct, Enum {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedEnum<T>();
         }

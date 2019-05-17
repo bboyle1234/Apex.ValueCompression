@@ -1,3 +1,4 @@
+using Apex.TimeStamps;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -30,11 +31,13 @@ namespace Apex.ValueCompression.Tests {
             }
 
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var x in values)
-                    ms.WriteCompressedInt(x);
+                    writer.WriteCompressedInt(x);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadCompressedInt());
+                    Assert.AreEqual(values[i], reader.ReadCompressedInt());
                 }
             }
         }
@@ -59,11 +62,13 @@ namespace Apex.ValueCompression.Tests {
             }
 
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var x in values)
-                    ms.WriteCompressedLong(x);
+                    writer.WriteCompressedLong(x);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadCompressedLong());
+                    Assert.AreEqual(values[i], reader.ReadCompressedLong());
                 }
             }
         }
@@ -88,11 +93,13 @@ namespace Apex.ValueCompression.Tests {
             }
 
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var x in values)
-                    ms.WriteCompressedUInt(x);
+                    writer.WriteCompressedUInt(x);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadCompressedUInt());
+                    Assert.AreEqual(values[i], reader.ReadCompressedUInt());
                 }
             }
         }
@@ -117,11 +124,13 @@ namespace Apex.ValueCompression.Tests {
             }
 
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var x in values)
-                    ms.WriteCompressedULong(x);
+                    writer.WriteCompressedULong(x);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadCompressedULong());
+                    Assert.AreEqual(values[i], reader.ReadCompressedULong());
                 }
             }
         }
@@ -141,11 +150,13 @@ namespace Apex.ValueCompression.Tests {
                 }
             }
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var x in values)
-                    ms.WriteFullDouble(x);
+                    writer.WriteFullDouble(x);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadFullDouble());
+                    Assert.AreEqual(values[i], reader.ReadFullDouble());
                 }
             }
         }
@@ -160,11 +171,13 @@ namespace Apex.ValueCompression.Tests {
             }
 
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var value in values)
-                    ms.WriteDoubleOffset(seed, tickSize, value);
+                    writer.WriteDoubleOffset(seed, tickSize, value);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadDoubleOffset(seed, tickSize));
+                    Assert.AreEqual(values[i], reader.ReadDoubleOffset(seed, tickSize));
                 }
             }
         }
@@ -178,11 +191,13 @@ namespace Apex.ValueCompression.Tests {
             values.Add("The quick brown fox jumped over the lazy dog.");
             values.Add(@"!@#$%^&*()_+~?><)""");
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var value in values)
-                    ms.WriteCompressedString(value);
+                    writer.WriteCompressedString(value);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadCompressedString());
+                    Assert.AreEqual(values[i], reader.ReadCompressedString());
                 }
             }
         }
@@ -208,11 +223,13 @@ namespace Apex.ValueCompression.Tests {
             }
 
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var x in values)
-                    ms.WriteCompressedDecimal(x);
+                    writer.WriteCompressedDecimal(x);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadCompressedDecimal());
+                    Assert.AreEqual(values[i], reader.ReadCompressedDecimal());
                 }
             }
         }
@@ -221,12 +238,27 @@ namespace Apex.ValueCompression.Tests {
         public void EnumCompressor() {
             var values = ((ConsoleColor[])Enum.GetValues(typeof(ConsoleColor))).ToList();
             using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
                 foreach (var x in values)
-                    ms.WriteCompressedEnum(x);
+                    writer.WriteCompressedEnum(x);
                 ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
                 for (var i = 0; i < values.Count; i++) {
-                    Assert.AreEqual(values[i], ms.ReadCompressedEnum<ConsoleColor>());
+                    Assert.AreEqual(values[i], reader.ReadCompressedEnum<ConsoleColor>());
                 }
+            }
+        }
+
+        [TestMethod]
+        public void TimeStampCompressor() {
+            var t = TimeStamp.Now;
+            using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
+                writer.WriteCompressedTimeStamp(t);
+                ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
+                var t2 = reader.ReadCompressedTimeStamp();
+                Assert.AreEqual(t, t2);
             }
         }
     }

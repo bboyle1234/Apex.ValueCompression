@@ -7,16 +7,16 @@ namespace Apex.ValueCompression {
 
     public static class DateTimeCompressor {
 
-        public static void WriteCompressedDateTime(this Stream stream, DateTime value) {
+        public static void WriteCompressedDateTime(this IWriteBytes stream, DateTime value) {
             stream.WriteCompressedLong(value.Ticks);
             stream.WriteCompressedEnum(value.Kind);
         }
 
-        public static DateTime ReadCompressedDateTime(this Stream stream) {
+        public static DateTime ReadCompressedDateTime(this IReadBytes stream) {
             return new DateTime(stream.ReadCompressedLong(), stream.ReadCompressedEnum<DateTimeKind>());
         }
 
-        public static void WriteCompressedNullableDateTime(this Stream stream, DateTime? value) {
+        public static void WriteCompressedNullableDateTime(this IWriteBytes stream, DateTime? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedDateTime(value.Value);
@@ -25,7 +25,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static DateTime? ReadCompressedNullableDateTime(this Stream stream) {
+        public static DateTime? ReadCompressedNullableDateTime(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedDateTime();
         }

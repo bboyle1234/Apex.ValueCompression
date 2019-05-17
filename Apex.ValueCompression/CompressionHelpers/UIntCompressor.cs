@@ -9,7 +9,7 @@ namespace Apex.ValueCompression {
         const uint DATA_MASK = 0x7F; // 0111 1111
         const uint MORE_MASK = 0x80; // 1000 0000
 
-        public static void WriteCompressedUInt(this Stream stream, uint value) {
+        public static void WriteCompressedUInt(this IWriteBytes stream, uint value) {
             while (value > DATA_MASK) {
                 stream.WriteByte((byte)((value & DATA_MASK)));
                 value >>= 7;
@@ -17,7 +17,7 @@ namespace Apex.ValueCompression {
             stream.WriteByte((byte)(value | MORE_MASK));
         }
 
-        public static uint ReadCompressedUInt(this Stream stream) {
+        public static uint ReadCompressedUInt(this IReadBytes stream) {
             uint result = 0;
             int shiftBits = 0;
 
@@ -32,7 +32,7 @@ namespace Apex.ValueCompression {
             return result | (uint)((inputByte & DATA_MASK) << shiftBits);
         }
 
-        public static void WriteCompressedNullableUInt(this Stream stream, uint? value) {
+        public static void WriteCompressedNullableUInt(this IWriteBytes stream, uint? value) {
             if (value.HasValue) {
                 stream.WriteCompressedInt(1);
                 stream.WriteCompressedUInt(value.Value);
@@ -41,7 +41,7 @@ namespace Apex.ValueCompression {
             }
         }
 
-        public static uint? ReadCompressedNullableUInt(this Stream stream) {
+        public static uint? ReadCompressedNullableUInt(this IReadBytes stream) {
             if (stream.ReadCompressedInt() == 0) return null;
             return stream.ReadCompressedUInt();
         }
