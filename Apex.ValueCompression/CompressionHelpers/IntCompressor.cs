@@ -3,6 +3,13 @@ using System.IO;
 using static System.Math;
 
 namespace Apex.ValueCompression {
+
+    /// <summary>
+    /// Uses Zig-Zag encoding to achieve small compression for negative as well as positive numbers.
+    /// See: 
+    /// https://developers.google.com/protocol-buffers/docs/encoding#signed-integers
+    /// https://stackoverflow.com/questions/2210923/zig-zag-decoding
+    /// </summary>
     public static class IntCompressor {
 
         public static void WriteCompressedInt(this IWriteBytes stream, int value) {
@@ -11,7 +18,7 @@ namespace Apex.ValueCompression {
 
         public static int ReadCompressedInt(this IReadBytes input) {
             var value = input.ReadCompressedUInt();
-            return (int)(uint)((value >> 1) ^ (-(value & 1)));
+            return (int)((value >> 1) ^ (~(value & 1) + 1));
         }
 
         public static void WriteCompressedNullableInt(this IWriteBytes stream, int? value) {
