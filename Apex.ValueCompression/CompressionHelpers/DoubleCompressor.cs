@@ -33,12 +33,12 @@ namespace Apex.ValueCompression {
             if (value == seed) {
                 stream.WriteCompressedInt(0);
             } else {
-                stream.WriteCompressedInt((int)Round((value - seed) / tickSize));
+                stream.WriteCompressedInt((int)Round((value - seed) / tickSize, MidpointRounding.AwayFromZero));
             }
         }
 
         public static double ReadDoubleOffset(this IReadBytes stream, double seed, double tickSize) {
-            return (double)(((int)Round(seed / tickSize) + stream.ReadCompressedInt()) * (decimal)tickSize);
+            return (double)(((int)Round(seed / tickSize, MidpointRounding.AwayFromZero) + stream.ReadCompressedInt()) * (decimal)tickSize);
             //return (double)((decimal)Round((seed / tickSize) + stream.ReadCompressedInt()) * (decimal)tickSize);
         }
     }
