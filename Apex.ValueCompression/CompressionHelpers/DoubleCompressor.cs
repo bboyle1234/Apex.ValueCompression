@@ -38,7 +38,8 @@ namespace Apex.ValueCompression {
         }
 
         public static double ReadDoubleOffset(this IReadBytes stream, double seed, double tickSize) {
-            return (double)((decimal)Round((seed / tickSize) + stream.ReadCompressedInt()) * (decimal)tickSize);
+            return (double)(((int)Round(seed / tickSize) + stream.ReadCompressedInt()) * (decimal)tickSize);
+            //return (double)((decimal)Round((seed / tickSize) + stream.ReadCompressedInt()) * (decimal)tickSize);
         }
     }
 }
