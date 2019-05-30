@@ -31,15 +31,24 @@ namespace Apex.ValueCompression {
 
         public static void WriteDoubleOffset(this IWriteBytes stream, double seed, double tickSize, double value) {
             if (value == seed) {
+                /// Since this is true 80% of the time in a trading platform, we use this optimization for significant performance gains.
                 stream.WriteCompressedInt(0);
             } else {
-                stream.WriteCompressedInt((int)Round((value - seed) / tickSize, MidpointRounding.AwayFromZero));
+                stream.WriteCompressedInt(ToTicks(value - seed, tickSize));
             }
         }
 
         public static double ReadDoubleOffset(this IReadBytes stream, double seed, double tickSize) {
-            return (double)(((int)Round(seed / tickSize, MidpointRounding.AwayFromZero) + stream.ReadCompressedInt()) * (decimal)tickSize);
-            //return (double)((decimal)Round((seed / tickSize) + stream.ReadCompressedInt()) * (decimal)tickSize);
+            var numTicks = stream.ReadCompressedInt();
+            /// Since this is true 80% of the time in a trading platform, we use this optimization for significant performance gains.
+            if (numTicks == 0) return seed;
+            return ToValue(tickSize, ToTicks(seed, tickSize) + numTicks);
         }
+
+        static int ToTicks(double value, double tickSize)
+            => (int)Round(value / tickSize, MidpointRounding.AwayFromZero);
+
+        static double ToValue(double tickSize, int numTicks)
+            => (double)(numTicks * (decimal)tickSize);
     }
 }

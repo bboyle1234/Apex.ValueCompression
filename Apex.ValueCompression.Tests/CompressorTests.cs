@@ -183,9 +183,9 @@ namespace Apex.ValueCompression.Tests {
         [TestMethod]
         public void DoubleCompressorOffset() {
             var values = new List<double>();
-            var tickSize = 0.1234;
+            var tickSize = 0.01;
             var seed = (double)(5683 * (decimal)tickSize);
-            for (var i = -100; i < 100; i++) {
+            for (var i = -1000000; i < 1000000; i++) {
                 values.Add((double)((decimal)seed + (decimal)tickSize * i));
             }
 
