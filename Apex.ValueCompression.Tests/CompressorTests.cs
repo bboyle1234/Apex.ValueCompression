@@ -280,5 +280,33 @@ namespace Apex.ValueCompression.Tests {
                 Assert.AreEqual(t, t2);
             }
         }
+
+        [TestMethod]
+        public void MonthStampCompressor() {
+            var now = DateTime.UtcNow;
+            var month = new MonthStamp(now.Year, now.Month);
+            using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
+                writer.WriteCompressedMonthStamp(month);
+                ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
+                var month2 = reader.ReadCompressedMonthStamp();
+                Assert.AreEqual(month, month2);
+            }
+        }
+
+        [TestMethod]
+        public void DateStampCompressor() {
+            var now = DateTime.UtcNow;
+            var date = new DateStamp(now.Year, now.Month, now.Day);
+            using (var ms = new MemoryStream()) {
+                var writer = ms.AsIWriteBytes();
+                writer.WriteCompressedDateStamp(date);
+                ms.Seek(0, SeekOrigin.Begin);
+                var reader = ms.AsIReadBytes();
+                var date2 = reader.ReadCompressedDateStamp();
+                Assert.AreEqual(date, date2);
+            }
+        }
     }
 }

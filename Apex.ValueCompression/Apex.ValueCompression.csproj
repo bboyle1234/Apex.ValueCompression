@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Apex.TimeStamps" Version="3.0.2" />
+    <PackageReference Include="Apex.TimeStamps" Version="3.1.7" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.3.151">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
