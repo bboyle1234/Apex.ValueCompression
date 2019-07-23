@@ -9,12 +9,12 @@ namespace Apex.ValueCompression {
     public static class DateStampCompressor {
 
         public static void WriteCompressedDateStamp(this IWriteBytes stream, DateStamp value) {
-            stream.WriteCompressedUInt((uint)((value.Year * 12 + value.Month) * 100 + value.Day));
+            stream.WriteCompressedUInt((uint)((value.Year * 12 + value.Month - 1) * 100 + value.Day));
         }
 
         public static DateStamp ReadCompressedDateStamp(this IReadBytes stream) {
             var value = (int)stream.ReadCompressedUInt();
-            return new DateStamp(value / 100 / 12, value / 100 % 12, value % 100);
+            return new DateStamp(value / 100 / 12, (value / 100 % 12) + 1, value % 100);
         }
 
         public static void WriteCompressedNullableDateStamp(this IWriteBytes stream, DateStamp? value) {

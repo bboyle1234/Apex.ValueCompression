@@ -283,29 +283,43 @@ namespace Apex.ValueCompression.Tests {
 
         [TestMethod]
         public void MonthStampCompressor() {
-            var now = DateTime.UtcNow;
-            var month = new MonthStamp(now.Year, now.Month);
+            var months = new List<MonthStamp>();
+            var month = new MonthStamp(1, 1);
+            do {
+                months.Add(month);
+                month = month.AddMonths(1);
+            } while (month.Year <= 5000);
             using (var ms = new MemoryStream()) {
                 var writer = ms.AsIWriteBytes();
-                writer.WriteCompressedMonthStamp(month);
+                foreach (var x in months)
+                    writer.WriteCompressedMonthStamp(x);
                 ms.Seek(0, SeekOrigin.Begin);
                 var reader = ms.AsIReadBytes();
-                var month2 = reader.ReadCompressedMonthStamp();
-                Assert.AreEqual(month, month2);
+                var months2 = new List<MonthStamp>();
+                for (var i = 0; i < months.Count; i++)
+                    months2.Add(reader.ReadCompressedMonthStamp());
+                Assert.IsTrue(months.SequenceEqual(months2));
             }
         }
 
         [TestMethod]
         public void DateStampCompressor() {
-            var now = DateTime.UtcNow;
-            var date = new DateStamp(now.Year, now.Month, now.Day);
+            var days = new List<DateStamp>();
+            var day = new DateStamp(1, 1, 1);
+            do {
+                days.Add(day);
+                day = day.AddMonths(1);
+            } while (day.Year <= 5000);
             using (var ms = new MemoryStream()) {
                 var writer = ms.AsIWriteBytes();
-                writer.WriteCompressedDateStamp(date);
+                foreach (var x in days)
+                    writer.WriteCompressedDateStamp(x);
                 ms.Seek(0, SeekOrigin.Begin);
                 var reader = ms.AsIReadBytes();
-                var date2 = reader.ReadCompressedDateStamp();
-                Assert.AreEqual(date, date2);
+                var days2 = new List<DateStamp>();
+                for (var i = 0; i < days.Count; i++)
+                    days2.Add(reader.ReadCompressedDateStamp());
+                Assert.IsTrue(days.SequenceEqual(days2));
             }
         }
     }
