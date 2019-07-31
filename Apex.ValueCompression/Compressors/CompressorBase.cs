@@ -7,11 +7,11 @@ namespace Apex.ValueCompression.Compressors {
     /// </summary>
     public abstract class CompressorBase<T> : ICompressor<T>, IDecompressor<T> {
 
-        public void Compress(IWriteBytes stream, object value)
+        void ICompressor.Compress(IWriteBytes stream, object value)
             => Compress(stream, (T)value);
 
         object IDecompressor.Decompress(IReadBytes stream)
-            => this.Decompress(stream);
+            => Decompress(stream);
 
         public abstract void Compress(IWriteBytes stream, T value);
 
