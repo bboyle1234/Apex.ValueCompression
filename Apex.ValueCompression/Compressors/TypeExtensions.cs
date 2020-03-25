@@ -9,13 +9,20 @@ namespace Apex.ValueCompression.Compressors {
 
     public static class TypeExtensions {
 
+        /// <summary>
+        /// Searches the given <paramref name="assembly"/> to extract metadata about all the <see cref="ICompressor"/> and <see cref="ICompressor{T}"/> types found within.
+        /// </summary>
         public static IEnumerable<CompressorTypeData> GetCompressorTypeData(this Assembly assembly)
             => assembly.GetTypes().SelectMany(t => t.GetCompressorTypeData());
 
+        /// <summary>
+        /// Searches the given <paramref name="assembly"/> to extract metadata about all the <see cref="IDecompressor"/> and <see cref="IDecompressor{T}"/> types found within.
+        /// </summary>
         public static IEnumerable<CompressorTypeData> GetDecompressorTypeData(this Assembly assembly)
             => assembly.GetTypes().SelectMany(t => t.GetDecompressorTypeData());
 
-        public static IEnumerable<CompressorTypeData> GetCompressorTypeData(this Type type) {
+
+        static IEnumerable<CompressorTypeData> GetCompressorTypeData(this Type type) {
             if (!type.IsClass) yield break;
             if (type.IsAbstract) yield break;
             foreach (var compressorInterface in type.GetInterfaces().Where(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(ICompressor<>))) {
@@ -27,7 +34,7 @@ namespace Apex.ValueCompression.Compressors {
             }
         }
 
-        public static IEnumerable<CompressorTypeData> GetDecompressorTypeData(this Type type) {
+        static IEnumerable<CompressorTypeData> GetDecompressorTypeData(this Type type) {
             if (!type.IsClass) yield break;
             if (type.IsAbstract) yield break;
             foreach (var decompressorInterface in type.GetInterfaces().Where(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IDecompressor<>))) {
